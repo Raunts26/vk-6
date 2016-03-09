@@ -94,6 +94,28 @@
             var li = new_jar.createHtmlElement();
             document.querySelector('.list-of-jars').appendChild(li);
           });
+        } else {
+          var xhttp = new XMLHttpRequest();
+          xhttp.onreadystatechange = function() {
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+             console.log(xhttp.responseText);
+             Moosipurk.instance.jars = JSON.parse(xhttp.responseText);
+
+             Moosipurk.instance.jars.forEach(function(jar) {
+
+               var new_jar = new Jar(jar.id, jar.title, jar.ingredients, jar.date);
+
+               var li = new_jar.createHtmlElement();
+               document.querySelector('.list-of-jars').appendChild(li);
+             });
+
+             localStorage.setItem('jars', JSON.stringify(Moosipurk.instance.jars));
+
+            }
+          };
+          xhttp.open("GET", "save.php", true);
+          xhttp.send();
+
         }
 
         //Hakka kuulama hiireklõpse
@@ -241,6 +263,16 @@
             break;
           }
         }
+
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (xhttp.readyState == 4 && xhttp.status == 200) {
+           console.log("Kustutan " + delete_id);
+          }
+        };
+        xhttp.open("GET", "save.php?delete=" + delete_id, true);
+        xhttp.send();
 
         localStorage.setItem("jars", JSON.stringify(this.jars));
 
