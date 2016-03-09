@@ -89,7 +89,7 @@
           //Tekitan loendi htmli
           this.jars.forEach(function(jar) {
 
-            var new_jar = new Jar(jar.title, jar.ingredients, jar.date);
+            var new_jar = new Jar(jar.id, jar.title, jar.ingredients, jar.date);
 
             var li = new_jar.createHtmlElement();
             document.querySelector('.list-of-jars').appendChild(li);
@@ -142,7 +142,8 @@
 
           this.showAnswer(true);
           //console.log(title + ' ' + ingredients + ' ' + date);
-          var new_jar = new Jar(guid(), title, ingredients, date);
+          var id = guid();
+          var new_jar = new Jar(id, title, ingredients, date);
           //console.log(new_jar);
 
           //Lisan massiivi purgi
@@ -150,6 +151,22 @@
           console.log(JSON.stringify(this.jars));
           // JSONI stringina salvestan localStorage'sse
           localStorage.setItem('jars', JSON.stringify(this.jars));
+
+          //AJAX
+          var xhttp = new XMLHttpRequest();
+
+          //Mis juhtub kui päring lõppeb
+          xhttp.onreadystatechange = function() {
+            //console.log(xhttp.readyState);
+            if (xhttp.readyState == 4 && xhttp.status == 200) {
+             console.log(xhttp.responseText);
+            }
+          };
+
+          //Teeb päringu
+          xhttp.open("GET", "save.php?id="+ id +"&title="+ title +"&ingredients="+ ingredients +"&date="+ date +"", true);
+          xhttp.send();
+
 
           var li = new_jar.createHtmlElement();
           document.querySelector('.list-of-jars').appendChild(li);
@@ -188,7 +205,48 @@
         document.querySelector('.' + this.currentRoute).className += " active-menu";
 
 
+      },
+
+      deleteJar: function(event) {
+        //Span
+        /*console.log(event.target);
+
+        //Li
+        console.log(event.target.parentNode);
+
+        //UL
+        console.log(event.target.parentNode.parentNode);
+
+        //id
+        console.log(event.target.dataset);*/
+
+        var c = confirm("Oled kindel?");
+
+        //Ei
+        if(!c) {
+          return;
+        }
+
+        var ul = event.target.parentNode.parentNode;
+        var li = event.target.parentNode;
+
+        ul.removeChild(li);
+
+        var delete_id = event.target.dataset.id;
+
+        //Kustutan objekti
+        for(var i = 0; i < this.jars.length; i++) {
+          if(this.jars[i].id == delete_id) {
+            this.jars.splice(i, 1);
+            break;
+          }
+        }
+
+        localStorage.setItem("jars", JSON.stringify(this.jars));
+
+
       }
+
 
 
 
@@ -237,6 +295,7 @@
         span_delete.innerHTML = " Delete";
         li.appendChild(span_delete);
 
+        span_delete.addEventListener("click", Moosipurk.instance.deleteJar.bind(Moosipurk.instance));
 
         return li;
       }
