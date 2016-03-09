@@ -142,7 +142,7 @@
 
           this.showAnswer(true);
           //console.log(title + ' ' + ingredients + ' ' + date);
-          var new_jar = new Jar(title, ingredients, date);
+          var new_jar = new Jar(guid(), title, ingredients, date);
           //console.log(new_jar);
 
           //Lisan massiivi purgi
@@ -194,7 +194,8 @@
 
     };
 
-    var Jar = function(title, ingredients, date) {
+    var Jar = function(new_id, title, ingredients, date) {
+      this.id = new_id;
       this.title = title;
       this.ingredients = ingredients;
       this.date = date;
@@ -227,11 +228,33 @@
 
         li.appendChild(content_span);
 
-        //console.log(li);
+        var span_delete = document.createElement('span');
+        span_delete.style.color = "#FF0000";
+        span_delete.style.cursor = "pointer";
+
+        span_delete.setAttribute("data-id", this.id);
+
+        span_delete.innerHTML = " Delete";
+        li.appendChild(span_delete);
+
 
         return li;
       }
     };
+
+    //Helper funktsioonid
+    function guid(){
+      var d = new Date().getTime();
+      if(window.performance && typeof window.performance.now === "function"){
+          d += performance.now(); //use high-precision timer if available
+      }
+      var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = (d + Math.random()*16)%16 | 0;
+          d = Math.floor(d/16);
+          return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+      });
+      return uuid;
+    }
 
     window.onload = function() {
       var app = new Moosipurk();
